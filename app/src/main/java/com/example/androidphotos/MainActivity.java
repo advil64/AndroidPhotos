@@ -1,8 +1,10 @@
 package com.example.androidphotos;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -63,26 +65,6 @@ public class MainActivity extends AppCompatActivity {
         renameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //list is empty
-                if(albums.size() == 0){
-                    //show pop-up error
-                    Bundle bundle = new Bundle();
-                    bundle.putString(PopupDialog.MESSAGE_KEY, "List is empty, there is nothing to rename");
-                    DialogFragment newFragment = new PopupDialog();
-                    newFragment.setArguments(bundle);
-                    newFragment.show(getSupportFragmentManager(),"badfields");
-                    return;
-                }
-                //nothing was selected
-                if(selectedIndex == -1){
-                    //show pop-up error
-                    Bundle bundle = new Bundle();
-                    bundle.putString(PopupDialog.MESSAGE_KEY, "Please select an item before renaming");
-                    DialogFragment newFragment = new PopupDialog();
-                    newFragment.setArguments(bundle);
-                    newFragment.show(getSupportFragmentManager(),"badfields");
-                    return;
-                }
                 openRenameActivity();
             }
         });
@@ -92,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         deleteButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                System.out.println("Delete button was clicked");
+                openDeleteActivity();
             }
         });
 
@@ -110,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         searchButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                searchActivity();
+                openSearchActivity();
             }
         });
     }
@@ -126,6 +108,26 @@ public class MainActivity extends AppCompatActivity {
 
     //method to start the rename activity
     public void openRenameActivity() {
+        //list is empty
+        if(albums.size() == 0){
+            //show pop-up error
+            Bundle bundle = new Bundle();
+            bundle.putString(PopupDialog.MESSAGE_KEY, "List is empty, there is nothing to rename");
+            DialogFragment newFragment = new PopupDialog();
+            newFragment.setArguments(bundle);
+            newFragment.show(getSupportFragmentManager(),"badfields");
+            return;
+        }
+        //nothing was selected
+        if(selectedIndex == -1){
+            //show pop-up error
+            Bundle bundle = new Bundle();
+            bundle.putString(PopupDialog.MESSAGE_KEY, "Please select an item before renaming");
+            DialogFragment newFragment = new PopupDialog();
+            newFragment.setArguments(bundle);
+            newFragment.show(getSupportFragmentManager(),"badfields");
+            return;
+        }
         Intent intent = new Intent(this, RenameAlbum.class);
         Bundle args = new Bundle();
         args.putSerializable("ARRAYLIST",(Serializable)albums);
@@ -135,19 +137,70 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent,RENAME_ALBUM_CODE);
     }
 
+    //method to start the delete album activity
+    public void openDeleteActivity(){
+        //list is empty
+        if(albums.size() == 0){
+            //show pop-up error
+            Bundle bundle = new Bundle();
+            bundle.putString(PopupDialog.MESSAGE_KEY, "List is empty, there is nothing to rename");
+            DialogFragment newFragment = new PopupDialog();
+            newFragment.setArguments(bundle);
+            newFragment.show(getSupportFragmentManager(),"badfields");
+            return;
+        }
+        //nothing was selected
+        if(selectedIndex == -1){
+            //show pop-up error
+            Bundle bundle = new Bundle();
+            bundle.putString(PopupDialog.MESSAGE_KEY, "Please select an item before renaming");
+            DialogFragment newFragment = new PopupDialog();
+            newFragment.setArguments(bundle);
+            newFragment.show(getSupportFragmentManager(),"badfields");
+            return;
+        }
+        //show confirmation window
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirmation");
+        builder.setMessage("Are you sure you want to delete this album?");
+        builder.setPositiveButton("Yes",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //delete album from list
+                      String album = listview.getItemAtPosition(selectedIndex).toString().trim();
+                        for(Album x: albums){
+                            if(x.toString().trim().equals(album)){
+                                albums.remove(x);
+                                update();
+                                break;
+                            }
+                        }
+                    }
+                });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                return;
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     //method to start the open album activity
     public void openAlbumActivity() {
         Intent intent = new Intent(this, OpenAlbum.class);
         startActivity(intent);
     }
 
-    //method to start the open album activity
-    public void searchActivity() {
+    //method to start the open search activity
+    public void openSearchActivity() {
         Intent intent = new Intent(this, Search.class);
         startActivity(intent);
     }
 
-    //method is run on return from other activities
+    //method is run on return from create and rename activities
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         //if user pressed cancel
@@ -179,6 +232,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // redo the adapter to reflect change
+        update();
+    }
+
+    //method to update the listview
+    public void update(){
         listview.setAdapter(
                 new ArrayAdapter<Album>(this,android.R.layout.simple_list_item_1 , albums));
     }
