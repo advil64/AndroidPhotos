@@ -1,0 +1,77 @@
+<resources>
+    <string name="app_name">AndroidPhotos</string>
+
+    <!-- Home Page -->
+        <!-- Temporary list of albums -->
+        <string name="AlbumListLabel">Album List</string>
+        <string-array name="albumList">
+            <item>Album1</item>
+            <item>Album2</item>
+            <item>Album3</item>
+            <item>Album4</item>
+            <item>Album5</item>
+            <item>Album6</item>
+            <item>Album7</item>
+            <item>Album8</item>
+        </string-array>
+        <!-- Buttons on home page -->
+        <string name="createButton">Create</string>
+        <string name="renameButton">Rename</string>
+        <string name="deleteButton">Delete</string>
+        <string name="openButton">Open Album</string>
+        <string name="searchButton">Search</string>
+        <!-- Labels in create and rename-->
+        <string name="albumNameLabel">Album Name:</string>
+        <string name="createLabel">Create</string>
+        <string name="renameLabel">Rename</string>
+        <string name="cancelLabel">Cancel</string>
+
+    <!-- Open Album Page -->
+        <!-- Buttons in open album page -->
+        <string name="addPhotoButton">Add Photo</string>
+        <string name="removePhotoButton">Remove Photo</string>
+        <string name="displayPhotoButton">Display Photo</string>
+        <!-- Temporary list of photos -->
+        <string name="PhotoListLabel">Photo List</string>
+        <string-array name="photoList">
+            <item>Photo1</item>
+            <item>Photo2</item>
+            <item>Photo3</item>
+            <item>Photo4</item>
+            <item>Photo5</item>
+        </string-array>
+
+    <!-- Search Photo Page -->
+        <!-- Spinner List (Person & Location) -->
+        <string-array name="tagType">
+            <item>Person</item>
+            <item>Location</item>
+        </string-array>
+        <!-- Tag Type Label -->
+        <string name="tagTypeLabel">Tag Type:</string>
+        <!-- Tag Label -->
+        <string name="tagLabel">Tag:</string>
+        <!-- Conjunction type List -->
+        <string-array name="conjunctionType">
+            <item>AND</item>
+            <item>OR</item>
+        </string-array>
+        <!-- Conjunction type Label -->
+        <string name="conjunctionTypeLabel">Conjunction:</string>
+        <!-- Search Button-->
+        <string name="searchPhotosButton">Search</string>
+
+
+    <string name="title_activity_create_album">CreateAlbum</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_rename_album">RenameAlbum</string>
+    <string name="title_activity_open_album">OpenAlbum</string>
+    <string name="title_activity_search">Search</string>
+</resources>
