@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         listview = findViewById(R.id.AlbumsList);
-        listview.setAdapter(new ArrayAdapter<Album>(this,android.R.layout.simple_list_item_1, albums));
+        listview.setAdapter(new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, albums));
         listview.setClickable(true);
         //setting the index of the item clicked on
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
         if(albums.size() == 0){
             //show pop-up error
             Bundle bundle = new Bundle();
-            bundle.putString(PopupDialog.MESSAGE_KEY, "List is empty, there is nothing to rename");
+            bundle.putString(PopupDialog.MESSAGE_KEY, "List is empty, there is nothing to delete");
             DialogFragment newFragment = new PopupDialog();
             newFragment.setArguments(bundle);
             newFragment.show(getSupportFragmentManager(),"badfields");
@@ -190,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
 
     //method to start the open album activity
     public void openAlbumActivity() {
+        Bundle bundle = new Bundle();
         Intent intent = new Intent(this, OpenAlbum.class);
         startActivity(intent);
     }
