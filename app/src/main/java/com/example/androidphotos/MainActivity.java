@@ -208,7 +208,30 @@ public class MainActivity extends AppCompatActivity {
 
     //method to start the open album activity
     public void openAlbumActivity() {
+        //list is empty
+        if(albums.size() == 0){
+            //show pop-up error
+            Bundle bundle = new Bundle();
+            bundle.putString(PopupDialog.MESSAGE_KEY, "List is empty, there is nothing to open");
+            DialogFragment newFragment = new PopupDialog();
+            newFragment.setArguments(bundle);
+            newFragment.show(getSupportFragmentManager(),"badfields");
+            return;
+        }
+        //nothing was selected
+        if(selectedIndex == -1){
+            //show pop-up error
+            Bundle bundle = new Bundle();
+            bundle.putString(PopupDialog.MESSAGE_KEY, "Please select an item before trying to open");
+            DialogFragment newFragment = new PopupDialog();
+            newFragment.setArguments(bundle);
+            newFragment.show(getSupportFragmentManager(),"badfields");
+            return;
+        }
         Intent intent = new Intent(this, OpenAlbum.class);
+        Bundle args = new Bundle();
+        args.putSerializable("ALBUM",(Serializable)listview.getItemAtPosition(selectedIndex));
+        intent.putExtra("BUNDLE",args);
         startActivity(intent);
     }
 

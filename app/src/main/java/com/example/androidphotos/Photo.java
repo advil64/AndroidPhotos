@@ -1,7 +1,9 @@
 package com.example.androidphotos;
 
 import android.media.Image;
+import android.net.Uri;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -10,10 +12,10 @@ import java.util.Collections;
  * @author Advith Chegu
  * @author Banty Patel
  */
-public class Photo implements Comparable<Photo>{
+public class Photo implements Comparable<Photo>, Serializable {
     private String caption;
     private ArrayList<String> tags;
-    private String photoPath;
+    private Uri photoPath;
 
     /**
      * Creates a new photo object
@@ -21,7 +23,7 @@ public class Photo implements Comparable<Photo>{
      * @param photoPath filepath of the photo on user's computer
      * @param tags tags of the photo in tag name: tag value format
      */
-    public Photo(String caption, ArrayList<String> tags, String photoPath){
+    public Photo(String caption, ArrayList<String> tags, Uri photoPath){
         this.caption = caption;
         this.tags = tags;
         this.photoPath = photoPath;
@@ -75,7 +77,7 @@ public class Photo implements Comparable<Photo>{
      * method to get the photo path of a photo
      * @return - path of photo
      */
-    public String getPhotoPath() {
+    public Uri getPhotoPath() {
         return photoPath;
     }
 
@@ -112,26 +114,26 @@ public class Photo implements Comparable<Photo>{
     @Override
     public int compareTo(Photo toCompare) {
 
-        //sort tag arrays before comparing
-        ArrayList<String> myTags = new ArrayList<>(this.tags);
-        ArrayList<String> compareTags = new ArrayList<>(toCompare.getTags());
-        Collections.sort(myTags);
-        Collections.sort(compareTags);
-
-        //first compare the date time
-        if (!this.photoPath.equals(toCompare.getPhotoPath())){
-            return this.photoPath.compareTo(toCompare.getPhotoPath());
-        } else if(!this.caption.equals(toCompare.getCaption())){
-            return this.caption.compareTo(toCompare.getCaption());
-        } else if(this.tags.size() != toCompare.getTags().size()){
-            return toCompare.getTags().size() - this.getTags().size();
-        } else{
-            for (int i = 0; i < this.tags.size(); i++){
-                if(!myTags.get(i).equals(compareTags.get(i))){
-                    return myTags.get(i).compareTo(compareTags.get(i));
-                }
-            }
-        }
+//        //sort tag arrays before comparing
+//        ArrayList<String> myTags = new ArrayList<>(this.tags);
+//        ArrayList<String> compareTags = new ArrayList<>(toCompare.getTags());
+//        Collections.sort(myTags);
+//        Collections.sort(compareTags);
+//
+//        //first compare the date time
+//        if (!this.photoPath.equals(toCompare.getPhotoPath())){
+//            return this.photoPath.compareTo(toCompare.getPhotoPath());
+//        } else if(!this.caption.equals(toCompare.getCaption())){
+//            return this.caption.compareTo(toCompare.getCaption());
+//        } else if(this.tags.size() != toCompare.getTags().size()){
+//            return toCompare.getTags().size() - this.getTags().size();
+//        } else{
+//            for (int i = 0; i < this.tags.size(); i++){
+//                if(!myTags.get(i).equals(compareTags.get(i))){
+//                    return myTags.get(i).compareTo(compareTags.get(i));
+//                }
+//            }
+//        }
         return 0;
     }
 
