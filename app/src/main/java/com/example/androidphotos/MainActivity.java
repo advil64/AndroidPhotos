@@ -7,6 +7,7 @@ import androidx.fragment.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -14,9 +15,12 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -43,6 +47,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         listview = findViewById(R.id.AlbumsList);
 
+        //make data folder if it doesn't exist
+        File folder = new File("data/data/com.example.androidphotos/data");
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+        //create file if it doesn't exist
+        File file = new File("data/data/com.example.androidphotos/data/albums.dat");
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         //reading data from file
         try {
             FileInputStream fis = new FileInputStream("data/data/com.example.androidphotos/data/albums.dat");
@@ -51,9 +68,11 @@ public class MainActivity extends AppCompatActivity {
             String albumInfo = null;
             albums = new ArrayList<Album>();
             albumInfo = br.readLine();
-            String[] tokens = albumInfo.split("\\|");
-            for(String s: tokens){
-                albums.add(new Album(s));
+            if(albumInfo!= null) {
+                String[] tokens = albumInfo.split("\\|");
+                for (String s : tokens) {
+                    albums.add(new Album(s));
+                }
             }
         } catch (IOException e) {}
 
@@ -273,6 +292,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // redo the adapter to reflect change
+        writeToFile(albums);
         update();
     }
 
@@ -280,5 +300,21 @@ public class MainActivity extends AppCompatActivity {
     public void update(){
         listview.setAdapter(
                 new ArrayAdapter<Album>(this,android.R.layout.simple_list_item_1 , albums));
+    }
+    //method to write back to file
+    private void writeToFile(ArrayList<Album> data) {
+        try {
+            FileOutputStream fos = new FileOutputStream("data/data/com.example.androidphotos/data/albums.dat");
+            OutputStreamWriter output = new OutputStreamWriter(fos);
+            String text = "";
+            for(Album x: data){
+                text += x.toFile();
+            }
+            output.write(text);
+            output.close();
+        }
+        catch (IOException e) {
+            Log.e("Exception", "Write to file failed");
+        }
     }
 }
