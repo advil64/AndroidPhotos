@@ -16,7 +16,7 @@ import android.widget.EditText;
 
 import java.util.ArrayList;
 
-public class RenameAlbum extends MainActivity {
+public class RenameAlbum extends AppCompatActivity {
 
     public static final String ALBUM_NAME = "albumName";
     private EditText renameText;

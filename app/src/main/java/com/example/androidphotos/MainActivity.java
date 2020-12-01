@@ -13,6 +13,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -38,6 +42,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         listview = findViewById(R.id.AlbumsList);
+
+        //reading data from file
+        try {
+            FileInputStream fis = new FileInputStream("data/data/com.example.androidphotos/data/albums.dat");
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(fis));
+            String albumInfo = null;
+            albums = new ArrayList<Album>();
+            albumInfo = br.readLine();
+            String[] tokens = albumInfo.split("\\|");
+            for(String s: tokens){
+                albums.add(new Album(s));
+            }
+        } catch (IOException e) {}
+
         listview.setAdapter(new ArrayAdapter<Album>(this,android.R.layout.simple_list_item_1, albums));
         listview.setClickable(true);
         //setting the index of the item clicked on
@@ -49,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //TODO add reading from file to listview
 
         //setting on action listener for create button
         createButton = findViewById(R.id.Create);

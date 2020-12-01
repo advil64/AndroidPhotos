@@ -3,6 +3,7 @@ package com.example.androidphotos;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 
@@ -12,7 +13,7 @@ import android.widget.EditText;
 
 import java.util.ArrayList;
 
-public class CreateAlbum extends MainActivity {
+public class CreateAlbum extends AppCompatActivity {
 
     private Button createButton;
     private EditText createText;
