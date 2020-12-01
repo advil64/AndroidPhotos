@@ -75,5 +75,9 @@ public class Album implements Serializable {
     public String toString() {
         return "Album name: " + this.albumName;
     }
+
+    public String toFile(){
+        return this.albumName + "|";
+    }
 }
 
