@@ -208,7 +208,14 @@ public class MainActivity extends AppCompatActivity {
                         for(Album x: albums){
                             if(x.toString().trim().equals(album)){
                                 albums.remove(x);
+                                writeToFile(albums);
                                 update();
+                                //delete the directory
+                                String albumName = x.getAlbumName();
+                                File photoFile = new File("data/data/com.example.androidphotos/data/" + albumName + "/photo.dat");
+                                File albumFile = new File("data/data/com.example.androidphotos/data/" + albumName);
+                                photoFile.delete();
+                                albumFile.delete();
                                 break;
                             }
                         }
@@ -256,6 +263,9 @@ public class MainActivity extends AppCompatActivity {
     //method to start the open search activity
     public void openSearchActivity() {
         Intent intent = new Intent(this, Search.class);
+        Bundle args = new Bundle();
+        args.putSerializable("ARRAYLIST",(Serializable)albums);
+        intent.putExtra("BUNDLE",args);
         startActivity(intent);
     }
 
@@ -280,6 +290,10 @@ public class MainActivity extends AppCompatActivity {
             for(Album x: albums){
                 if(x.getAlbumName().equals(oldName)){
                     x.setAlbumName(name);
+                    //rename album directory
+                    File newName = new File("data/data/com.example.androidphotos/data/" + name);
+                    File file = new File("data/data/com.example.androidphotos/data/" + oldName);
+                    file.renameTo(newName);
                     break;
                 }
             }
@@ -288,6 +302,18 @@ public class MainActivity extends AppCompatActivity {
         else {
             String name = bundle.getString(CreateAlbum.ALBUM_NAME);
             albums.add(new Album(name, new ArrayList<Photo>()));
+            //create the album directory with a photo.dat file in it
+            File folder = new File("data/data/com.example.androidphotos/data/" + name);
+            if (!folder.exists()) {
+                folder.mkdir();
+            }
+            //create file if it doesn't exist
+            File file = new File("data/data/com.example.androidphotos/data/" + name + "/photo.dat");
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         // redo the adapter to reflect change
