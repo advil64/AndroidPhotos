@@ -1,6 +1,5 @@
 package com.example.androidphotos;
 
-import android.media.Image;
 import android.net.Uri;
 
 import java.io.Serializable;

@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class OpenAlbum extends AppCompatActivity {
@@ -82,19 +83,21 @@ public class OpenAlbum extends AppCompatActivity {
                     Uri selectedImage = imageReturnedIntent.getData();
                     Photo newPhoto = new Photo("Cap", new ArrayList<>(),selectedImage);
                     currAlbum.addPhoto(newPhoto);
-                    photos.add(newPhoto);
                     update();
-//                    imageview.setImageURI(selectedImage);
                 }
-
+                Intent intent = new Intent(this, AddPhoto.class);
+                Bundle args = new Bundle();
+                args.putSerializable("ARRAYLIST",(Serializable)photos);
+                intent.putExtra("BUNDLE",args);
+                startActivityForResult(intent,1);
                 break;
         }
     }
 
     //method to update the list view
     public void update(){
-        listview.setAdapter(
-                new ArrayAdapter<Photo>(this,R.layout.image_list_item, photos));
+        PhotosAdapter customAdapter = new PhotosAdapter(this, photos);
+        listview.setAdapter(customAdapter);
     }
 
 }

@@ -15,9 +15,9 @@ public class Album implements Serializable {
      * Creates a new Album object
      * @param albumName name of the new album
      */
-    public Album(String albumName){
+    public Album(String albumName, ArrayList<Photo> newPhotos){
         this.albumName = albumName;
-        this.albumPhotos = null;
+        this.albumPhotos = newPhotos;
     }
 
     /**

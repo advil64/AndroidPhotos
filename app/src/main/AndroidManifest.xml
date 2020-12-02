@@ -10,9 +10,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidPhotos">
         <activity
+            android:name=".AddPhoto"
+            android:label="@string/title_activity_add_photo"
+            android:theme="@style/Theme.AndroidPhotos.NoActionBar">
+        </activity>
+        <!--
+               Set to true if your app is Standalone, that is, it does not require the handheld
+               app to run.
+        -->
+        <activity
             android:name=".Search"
             android:label="@string/title_activity_search"
-            android:theme="@style/Theme.AndroidPhotos.NoActionBar"></activity>
+            android:theme="@style/Theme.AndroidPhotos.NoActionBar" />
         <activity
             android:name=".OpenAlbum"
             android:label="@string/title_activity_open_album"
@@ -32,6 +41,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.google.android.wearable.standalone"
+            android:value="true" />
+
     </application>
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />

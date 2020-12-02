@@ -66,12 +66,11 @@ public class MainActivity extends AppCompatActivity {
             BufferedReader br = new BufferedReader(
                     new InputStreamReader(fis));
             String albumInfo = null;
-            albums = new ArrayList<Album>();
             albumInfo = br.readLine();
             if(albumInfo!= null) {
                 String[] tokens = albumInfo.split("\\|");
                 for (String s : tokens) {
-                    albums.add(new Album(s));
+                    albums.add(new Album(s, new ArrayList<Photo>()));
                 }
             }
         } catch (IOException e) {}
@@ -288,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
         //add album to list (Create)
         else {
             String name = bundle.getString(CreateAlbum.ALBUM_NAME);
-            albums.add(new Album(name));
+            albums.add(new Album(name, new ArrayList<Photo>()));
         }
 
         // redo the adapter to reflect change
