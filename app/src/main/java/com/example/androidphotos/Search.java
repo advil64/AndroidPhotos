@@ -82,6 +82,35 @@ public class Search extends AppCompatActivity {
             }
             String firstTagType = tagType1.getSelectedItem().toString();
             String secondTagType = tagType2.getSelectedItem().toString();
+            if(firstTagType.equals("") || firstTagType==null || secondTagType.equals("") || secondTagType==null){
+                //show pop-up error (both tags types are required)
+                Bundle bundle = new Bundle();
+                bundle.putString(PopupDialog.MESSAGE_KEY, "Please choose a tag type for both tags for AND conjunction");
+                DialogFragment newFragment = new PopupDialog();
+                newFragment.setArguments(bundle);
+                newFragment.show(getSupportFragmentManager(),"badfields");
+                return;
+            }
+            String totalTag1 = firstTagType + ": " + firstTag;
+            String totalTag2 = secondTagType + ": " + secondTag;
+            //loop through photos and see if photo has both tags if so add to listview
+            int count = 0;
+            for(Photo p: photos){
+                if(p.getTags().contains(totalTag1) && p.getTags().contains(totalTag2)){
+                    count++;
+                    //add to listview
+                }
+            }
+            if(count == 0){
+                //show pop-up error (no photo with provided tags)
+                Bundle bundle = new Bundle();
+                bundle.putString(PopupDialog.MESSAGE_KEY, "There are no photos with the provided tags");
+                DialogFragment newFragment = new PopupDialog();
+                newFragment.setArguments(bundle);
+                newFragment.show(getSupportFragmentManager(),"badfields");
+                return;
+            }
+
         }
         //OR CONJUNCTION
         else if (conjunctionType.equals("OR")){
@@ -91,7 +120,7 @@ public class Search extends AppCompatActivity {
             //display error to choose conjunction type
             //show pop-up error (conjunction is required)
             Bundle bundle = new Bundle();
-            bundle.putString(PopupDialog.MESSAGE_KEY, "Please choose a conjunction type");
+            bundle.putString(PopupDialog.MESSAGE_KEY, "Please choose a conjunction");
             DialogFragment newFragment = new PopupDialog();
             newFragment.setArguments(bundle);
             newFragment.show(getSupportFragmentManager(),"badfields");
