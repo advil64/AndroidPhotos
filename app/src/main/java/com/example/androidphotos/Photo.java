@@ -14,7 +14,7 @@ import java.util.Collections;
 public class Photo implements Comparable<Photo>, Serializable {
     private String caption;
     private ArrayList<String> tags;
-    private Uri photoPath;
+    private String photoPath;
 
     /**
      * Creates a new photo object
@@ -22,7 +22,7 @@ public class Photo implements Comparable<Photo>, Serializable {
      * @param photoPath filepath of the photo on user's computer
      * @param tags tags of the photo in tag name: tag value format
      */
-    public Photo(String caption, ArrayList<String> tags, Uri photoPath){
+    public Photo(String caption, ArrayList<String> tags, String photoPath){
         this.caption = caption;
         this.tags = tags;
         this.photoPath = photoPath;
@@ -77,7 +77,7 @@ public class Photo implements Comparable<Photo>, Serializable {
      * @return - path of photo
      */
     public Uri getPhotoPath() {
-        return photoPath;
+        return Uri.parse(photoPath);
     }
 
     /**

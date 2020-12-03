@@ -79,17 +79,17 @@ public class OpenAlbum extends AppCompatActivity {
         switch(requestCode) {
             case 0:
             case 1:
-                if(resultCode == RESULT_OK){
+                if(resultCode == RESULT_OK) {
                     Uri selectedImage = imageReturnedIntent.getData();
-                    Photo newPhoto = new Photo("Cap", new ArrayList<>(),selectedImage);
+                    Photo newPhoto = new Photo("", new ArrayList<>(), selectedImage.toString());
                     currAlbum.addPhoto(newPhoto);
                     update();
+                    Intent intent = new Intent(this, AddPhoto.class);
+                    Bundle args = new Bundle();
+                    args.putSerializable("PHOTO", (Serializable)newPhoto);
+                    intent.putExtra("BUNDLE", args);
+                    startActivity(intent);
                 }
-                Intent intent = new Intent(this, AddPhoto.class);
-                Bundle args = new Bundle();
-                args.putSerializable("ARRAYLIST",(Serializable)photos);
-                intent.putExtra("BUNDLE",args);
-                startActivityForResult(intent,1);
                 break;
         }
     }
