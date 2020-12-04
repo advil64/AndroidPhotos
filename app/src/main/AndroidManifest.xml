@@ -12,9 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidPhotos">
         <activity
+            android:name=".DisplayPhoto"
+            android:label="@string/title_activity_display_photo"
+            android:theme="@style/Theme.AndroidPhotos.NoActionBar"></activity>
+        <activity
             android:name=".AddPhoto"
             android:label="@string/title_activity_add_photo"
-            android:theme="@style/Theme.AndroidPhotos.NoActionBar"></activity>
+            android:theme="@style/Theme.AndroidPhotos.NoActionBar" />
         <!--
                Set to true if your app is Standalone, that is, it does not require the handheld
                app to run.

@@ -29,6 +29,7 @@ public class OpenAlbum extends AppCompatActivity {
 
     ArrayList<Photo> photos= new ArrayList<>();
 
+    public static final int TAGS_CODE = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //setting up display
@@ -85,6 +86,9 @@ public class OpenAlbum extends AppCompatActivity {
 
     public void displayPhotoActivity(){
         Intent intent = new Intent(this, DisplayPhoto.class);
+        Bundle args = new Bundle();
+        args.putSerializable("IMAGE",(Serializable)currAlbum.getPhotos().get(selectedIndex));
+        intent.putExtra("BUNDLE",args);
         startActivity(intent);
     }
 

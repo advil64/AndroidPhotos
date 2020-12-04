@@ -90,4 +90,5 @@
         <item>OR</item>
     </string-array>
     <string name="title_activity_dis">dis</string>
+    <string name="title_activity_display_photo">DisplayPhoto</string>
 </resources>
