@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class AddPhoto extends AppCompatActivity {
@@ -78,6 +79,8 @@ public class AddPhoto extends AppCompatActivity {
         }
         //if album name doesn't exist send album name in bundle to caller
         currPhoto.setCaption(photoName);
+        Bundle args = new Bundle();
+        args.putSerializable("CAPTION",(Serializable)photoName);
         finish(); // pops activity from the call stack, returns to parent
     }
 }
