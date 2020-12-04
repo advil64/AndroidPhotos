@@ -58,12 +58,21 @@ public class OpenAlbum extends AppCompatActivity {
             }
         });
 
-        //setting on action listener for add photo button
+        //setting on action listener for display photo button
         addPhoto = findViewById(R.id.addPhotoButton);
         addPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 pickPhotoActivity();
+            }
+        });
+
+        //setting on action listener for add photo button
+        displayPhotoButton = findViewById(R.id.displayPhotoButton);
+        displayPhotoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayPhotoActivity();
             }
         });
     }
@@ -72,6 +81,11 @@ public class OpenAlbum extends AppCompatActivity {
         Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(pickPhoto , 1);
+    }
+
+    public void displayPhotoActivity(){
+        Intent intent = new Intent(this, DisplayPhoto.class);
+        startActivity(intent);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {

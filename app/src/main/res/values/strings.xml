@@ -41,6 +41,14 @@
     <!-- Search Button-->
     <string name="next">Next</string>
 
+    <!-- Display Photo Page -->
+    <!-- Tags List-->
+    <string name="tags">Tags</string>
+    <string name="tagtype">Tag Type:</string>
+    <string name="addTagButton">Add Tag</string>
+    <string name="RemoveTagButton">Remove Tag</string>
+    <string name="slideShowButton">SlideShow</string>
+
 
     <string name="previous">Previous</string>
     <!-- Strings used for fragments for navigation -->
@@ -81,4 +89,5 @@
         <item>AND</item>
         <item>OR</item>
     </string-array>
+    <string name="title_activity_dis">dis</string>
 </resources>
