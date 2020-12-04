@@ -9,6 +9,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 
 import android.view.View;
 import android.widget.AdapterView;
@@ -59,7 +60,7 @@ public class OpenAlbum extends AppCompatActivity {
             }
         });
 
-        //setting on action listener for display photo button
+        //setting on action listener add photo button
         addPhoto = findViewById(R.id.addPhotoButton);
         addPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +69,7 @@ public class OpenAlbum extends AppCompatActivity {
             }
         });
 
-        //setting on action listener for add photo button
+        //setting on action listener for display button
         displayPhotoButton = findViewById(R.id.displayPhotoButton);
         displayPhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,9 +86,29 @@ public class OpenAlbum extends AppCompatActivity {
     }
 
     public void displayPhotoActivity(){
+        //list is empty
+        if(photos.size() == 0){
+            //show pop-up error
+            Bundle bundle = new Bundle();
+            bundle.putString(PopupDialog.MESSAGE_KEY, "List is empty, there is nothing to display");
+            DialogFragment newFragment = new PopupDialog();
+            newFragment.setArguments(bundle);
+            newFragment.show(getSupportFragmentManager(),"badfields");
+            return;
+        }
+        //nothing was selected
+        if(selectedIndex == -1){
+            //show pop-up error
+            Bundle bundle = new Bundle();
+            bundle.putString(PopupDialog.MESSAGE_KEY, "Please select an item before displaying");
+            DialogFragment newFragment = new PopupDialog();
+            newFragment.setArguments(bundle);
+            newFragment.show(getSupportFragmentManager(),"badfields");
+            return;
+        }
         Intent intent = new Intent(this, DisplayPhoto.class);
         Bundle args = new Bundle();
-        args.putSerializable("IMAGE",(Serializable)currAlbum.getPhotos().get(selectedIndex));
+        args.putSerializable("PHOTO",(Serializable)listview.getItemAtPosition(selectedIndex));
         intent.putExtra("BUNDLE",args);
         startActivity(intent);
     }
