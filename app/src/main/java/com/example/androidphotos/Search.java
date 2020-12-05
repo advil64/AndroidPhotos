@@ -119,11 +119,11 @@ public class Search extends AppCompatActivity {
                 for(String t: p.getTags()){
                     if(t.contains(firstTagType)){
                         int firstSize = firstTagType.length();
-                        if(t.substring(firstSize+2).contains(firstTag)){
+                        if(t.substring(firstSize+2).toUpperCase().contains(firstTag.toUpperCase())){
                             for(String t2: p.getTags()){
                                 if(t2.contains(secondTagType)){
                                     int secondSize = secondTagType.length();
-                                    if(t2.substring(secondSize+2).contains(secondTag)){
+                                    if(t2.substring(secondSize+2).toUpperCase().contains(secondTag.toUpperCase())){
                                         //check for duplicates
                                         for (Photo x : toDisplay) {
                                             if (x.getPhotoPath().equals(p.getPhotoPath())) {
@@ -188,7 +188,7 @@ public class Search extends AppCompatActivity {
                 for(Photo p: photos){
                     for(String t: p.getTags()){
                         if(t.contains("Location: ") && firstTagType.equals("Location")){
-                            if(t.substring(10).contains(firstTag)){
+                            if(t.substring(10).toUpperCase().contains(firstTag.toUpperCase())){
                                 //check for duplicates
                                 for (Photo x : toDisplay) {
                                     if (x.getPhotoPath().equals(p.getPhotoPath())) {
@@ -206,7 +206,7 @@ public class Search extends AppCompatActivity {
                             }
                         }
                         else if(t.contains("Person: ") && firstTagType.equals("Person")){
-                            if(t.substring(8).contains(firstTag)){
+                            if(t.substring(8).toUpperCase().contains(firstTag.toUpperCase())){
                                 //check for duplicates
                                 for (Photo x : toDisplay) {
                                     if (x.getPhotoPath().equals(p.getPhotoPath())) {
@@ -252,7 +252,7 @@ public class Search extends AppCompatActivity {
                 for(Photo p: photos){
                     for(String t: p.getTags()){
                         if(t.contains("Location: ") && secondTagType.equals("Location")){
-                            if(t.substring(10).contains(secondTag)){
+                            if(t.substring(10).toUpperCase().contains(secondTag.toUpperCase())){
                                 //check to see if photo is already in the list
                                 for(Photo x: toDisplay){
                                     if(x.getPhotoPath().equals(p.getPhotoPath())){
@@ -270,7 +270,7 @@ public class Search extends AppCompatActivity {
                             }
                         }
                         else if(t.contains("Person: ")){
-                            if(t.substring(8).contains(secondTag) && secondTagType.equals("Person")){
+                            if(t.substring(8).toUpperCase().contains(secondTag.toUpperCase()) && secondTagType.equals("Person")){
                                 //check to see if photo is already in the list
                                 for(Photo x: toDisplay){
                                     if(x.getPhotoPath().equals(p.getPhotoPath())){
@@ -316,7 +316,7 @@ public class Search extends AppCompatActivity {
                 for(Photo p: photos){
                     for(String p1: p.getTags()){
                         if(p1.contains("Location: ")){
-                            if(firstTagType.equals("Location") && p1.substring(10).contains(firstTag)){
+                            if(firstTagType.equals("Location") && p1.substring(10).toUpperCase().contains(firstTag.toUpperCase())){
                                 //check to see if photo is already in the list
                                 for(Photo x: toDisplay){
                                     if(x.getPhotoPath().equals(p.getPhotoPath())){
@@ -332,7 +332,7 @@ public class Search extends AppCompatActivity {
                                 }
                                 present = false;
                             }
-                            if(secondTagType.equals("Location") && p1.substring(10).contains(secondTag)){
+                            if(secondTagType.equals("Location") && p1.substring(10).toUpperCase().contains(secondTag.toUpperCase())){
                                 //check to see if photo is already in the list
                                 for(Photo x: toDisplay){
                                     if(x.getPhotoPath().equals(p.getPhotoPath())){
@@ -350,7 +350,7 @@ public class Search extends AppCompatActivity {
                             }
                         }
                         if(p1.contains("Person: ")){
-                            if(firstTagType.equals("Person") && p1.substring(8).contains(firstTag)){
+                            if(firstTagType.equals("Person") && p1.substring(8).toUpperCase().contains(firstTag.toUpperCase())){
                                 //check to see if photo is already in the list
                                 for(Photo x: toDisplay){
                                     if(x.getPhotoPath().equals(p.getPhotoPath())){
@@ -366,7 +366,7 @@ public class Search extends AppCompatActivity {
                                 }
                                 present = false;
                             }
-                            if(secondTagType.equals("Person") && p1.substring(8).contains(secondTag)){
+                            if(secondTagType.equals("Person") && p1.substring(8).toUpperCase().contains(secondTag.toUpperCase())){
                                 //check to see if photo is already in the list
                                 for(Photo x: toDisplay){
                                     if(x.getPhotoPath().equals(p.getPhotoPath())){

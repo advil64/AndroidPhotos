@@ -36,6 +36,7 @@ public class OpenAlbum extends AppCompatActivity {
     private int selectedIndex = -1;
 
     ArrayList<Photo> photos= new ArrayList<>();
+    ArrayList<Album> albums= new ArrayList<>();
 
     public static final int TAGS_CODE = 1;
     @Override
@@ -52,6 +53,7 @@ public class OpenAlbum extends AppCompatActivity {
         //retrieving current album
         Intent intent = getIntent();
         Bundle args = intent.getBundleExtra("BUNDLE");
+        albums = (ArrayList<Album>)args.getSerializable("ALL ALBUMS");
         currAlbum = (Album)args.getSerializable("ALBUM");
         photos = currAlbum.getPhotos();
 
@@ -115,6 +117,7 @@ public class OpenAlbum extends AppCompatActivity {
         }
         Intent intent = new Intent(this, DisplayPhoto.class);
         Bundle args = new Bundle();
+        args.putSerializable("ALL ALBUMS", (Serializable)albums);
         args.putSerializable("PHOTO",(Serializable)listview.getItemAtPosition(selectedIndex));
         intent.putExtra("BUNDLE",args);
         startActivity(intent);

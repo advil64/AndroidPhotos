@@ -258,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
         }
         Intent intent = new Intent(this, OpenAlbum.class);
         Bundle args = new Bundle();
+        args.putSerializable("ALL ALBUMS", (Serializable)albums);
         args.putSerializable("ALBUM",(Serializable)listview.getItemAtPosition(selectedIndex));
         intent.putExtra("BUNDLE",args);
         startActivity(intent);
