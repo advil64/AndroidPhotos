@@ -15,11 +15,14 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -208,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
                         for(Album x: albums){
                             if(x.toString().trim().equals(album)){
                                 albums.remove(x);
-                                writeToFile(albums);
+                                writeAlbumsToFile(albums);
                                 update();
                                 //delete the directory
                                 String albumName = x.getAlbumName();
@@ -317,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // redo the adapter to reflect change
-        writeToFile(albums);
+        writeAlbumsToFile(albums);
         update();
     }
 
@@ -327,7 +330,7 @@ public class MainActivity extends AppCompatActivity {
                 new ArrayAdapter<Album>(this,android.R.layout.simple_list_item_1 , albums));
     }
     //method to write back to file
-    private void writeToFile(ArrayList<Album> data) {
+    private void writeAlbumsToFile(ArrayList<Album> data) {
         try {
             FileOutputStream fos = new FileOutputStream("data/data/com.example.androidphotos/data/albums.dat");
             OutputStreamWriter output = new OutputStreamWriter(fos);
