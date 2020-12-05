@@ -78,6 +78,7 @@
         <item>Photo5</item>
     </string-array>
     <string-array name="tagType">
+        <item>None</item>
         <item>Person</item>
         <item>Location</item>
     </string-array>
