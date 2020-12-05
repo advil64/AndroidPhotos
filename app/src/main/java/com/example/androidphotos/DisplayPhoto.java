@@ -43,7 +43,7 @@ public class DisplayPhoto extends AppCompatActivity {
 //        ImageView myImageView = findViewById(R.id.image);
 //        myImageView.setImageURI(currPhoto.getPhotoPath());
 
-        albums = (ArrayList<Album>)args.getSerializable("ALL ALBUMS");
+        albums = (ArrayList<Album>)args.getSerializable("ALL ALBUMS"); 
         addTagButton = findViewById(R.id.addTag);
         removeTagButton = findViewById(R.id.removeTag);
 
@@ -65,7 +65,7 @@ public class DisplayPhoto extends AppCompatActivity {
             }
         });
     }
-
+    
     private void addTag(Photo currPhoto){
         tagType = findViewById(R.id.tagType);
         tagText = findViewById(R.id.tagText);
@@ -104,12 +104,12 @@ public class DisplayPhoto extends AppCompatActivity {
                 }
             }
         }
-
+        
         //write data to all albums' photo.dat
         
     }
 
     private void removeTag(Photo currPhoto) {
-
+    
     }
 }
