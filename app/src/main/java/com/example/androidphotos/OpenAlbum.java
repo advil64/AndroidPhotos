@@ -58,9 +58,10 @@ public class OpenAlbum extends AppCompatActivity {
         photos = currAlbum.getPhotos();
 
         //setting up list of photos
-        listview = findViewById(R.id.PhotoList);
-        listview.setAdapter(new ArrayAdapter<>(this,R.layout.image_list_item, photos));
+        listview = (ListView) findViewById(R.id.PhotoList);
+        listview.setAdapter(new PhotosAdapter(this, R.id.PhotoList, photos));
         listview.setClickable(true);
+        listview.setItemsCanFocus(false);
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
@@ -145,8 +146,8 @@ public class OpenAlbum extends AppCompatActivity {
 
     //method to update the list view
     public void update(){
-        PhotosAdapter customAdapter = new PhotosAdapter(this, photos);
-        listview.setAdapter(customAdapter);
+        //PhotosAdapter customAdapter = new PhotosAdapter(this, photos);
+        listview.setAdapter(new PhotosAdapter(this, R.id.PhotoList, photos));
     }
 
     //method to read photos from file
