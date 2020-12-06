@@ -11,9 +11,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
@@ -26,6 +29,9 @@ public class DisplayPhoto extends AppCompatActivity {
     private Button removeTagButton;
     private Spinner tagType;
     private EditText tagText;
+    private ListView tagsList;
+
+    int selectedIndex = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +52,18 @@ public class DisplayPhoto extends AppCompatActivity {
         albums = (ArrayList<Album>)args.getSerializable("ALL ALBUMS"); 
         addTagButton = findViewById(R.id.addTag);
         removeTagButton = findViewById(R.id.removeTag);
+
+        tagsList = findViewById(R.id.tagsList);
+        tagsList.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, currPhoto.getTags()));
+        tagsList.setClickable(true);
+        //setting the index of the item clicked on
+        tagsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                selectedIndex = position;
+            }
+        });
 
         //setting on action listener for add tag button
         addTagButton = findViewById(R.id.addTag);
@@ -104,12 +122,54 @@ public class DisplayPhoto extends AppCompatActivity {
                 }
             }
         }
-        
+
+        //update the listview
+        update();
         //write data to all albums' photo.dat
+
         
     }
 
     private void removeTag(Photo currPhoto) {
-    
+    ////////////////////////////////////////////
+        //if nothing is selected in from the tags List
+        if(selectedIndex == -1){
+            Bundle bundle = new Bundle();
+            bundle.putString(PopupDialog.MESSAGE_KEY, "Please select a tag");
+            DialogFragment newFragment = new PopupDialog();
+            newFragment.setArguments(bundle);
+            newFragment.show(getSupportFragmentManager(),"badfields");
+            return;
+        }
+        //if list is empty
+        if(currPhoto.getTags().size() == 0){
+            Bundle bundle = new Bundle();
+            bundle.putString(PopupDialog.MESSAGE_KEY, "List is empty");
+            DialogFragment newFragment = new PopupDialog();
+            newFragment.setArguments(bundle);
+            newFragment.show(getSupportFragmentManager(),"badfields");
+            return;
+        }
+        //removing from tags list from all references
+        String remove = tagsList.getItemAtPosition(selectedIndex).toString();
+        currPhoto.getTags().remove(remove);
+        for(Album x: albums){
+            for(Photo p: x.getPhotos()){
+                if(p.getPhotoPath().equals(currPhoto.getPhotoPath())){
+                    p = currPhoto;
+                }
+            }
+        }
+        //update the listview
+        update();
+        //write data to all albums' photo.dat
+
+
+
+    }
+    //method to update the listview
+    public void update(){
+        tagsList.setAdapter(
+                new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1 , currPhoto.getTags()));
     }
 }
