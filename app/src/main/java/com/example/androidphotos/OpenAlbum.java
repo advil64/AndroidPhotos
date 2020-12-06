@@ -126,19 +126,35 @@ public class OpenAlbum extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+        Photo newPhoto = null;
         switch(requestCode) {
+
+            //first two cases are for the camera image returned
             case 0:
             case 1:
                 if(resultCode == RESULT_OK) {
                     Uri selectedImage = imageReturnedIntent.getData();
-                    Photo newPhoto = new Photo("", new ArrayList<>(), selectedImage.toString());
-                    currAlbum.addPhoto(newPhoto);
-                    update();
+                    newPhoto = new Photo("", new ArrayList<>(), selectedImage.toString());
                     Intent intent = new Intent(this, AddPhoto.class);
                     Bundle args = new Bundle();
                     args.putSerializable("PHOTO", (Serializable)newPhoto);
                     intent.putExtra("BUNDLE", args);
-                    startActivity(intent);
+                    startActivityForResult(intent, 2);
+                }
+                break;
+
+            //this case is for the name of the image
+            case 2:
+                if(resultCode == RESULT_OK){
+                    Bundle bundle = imageReturnedIntent.getExtras();
+                    //get the most recently added image
+                    if(bundle != null){
+                        String name = bundle.getString("CAPTION");
+                        String photoPath = bundle.getString("PHOTOPATH");
+                        newPhoto = new Photo(name, new ArrayList<>(), photoPath);
+                        currAlbum.addPhoto(newPhoto);
+                        update();
+                    }
                 }
                 break;
         }
@@ -146,7 +162,6 @@ public class OpenAlbum extends AppCompatActivity {
 
     //method to update the list view
     public void update(){
-        //PhotosAdapter customAdapter = new PhotosAdapter(this, photos);
         listview.setAdapter(new PhotosAdapter(this, R.id.PhotoList, photos));
     }
 

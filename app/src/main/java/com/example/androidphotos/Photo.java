@@ -14,7 +14,7 @@ import java.util.Collections;
 public class Photo implements Comparable<Photo>, Serializable {
     private String caption;
     private ArrayList<String> tags;
-    private String photoPath;
+    public String photoPath;
 
     /**
      * Creates a new photo object

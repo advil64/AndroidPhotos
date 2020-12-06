@@ -62,6 +62,7 @@ public class AddPhoto extends AppCompatActivity {
     }
 
     public void cancel(View view){
+        setResult(RESULT_CANCELED);
         finish();
     }
 
@@ -81,6 +82,10 @@ public class AddPhoto extends AppCompatActivity {
         currPhoto.setCaption(photoName);
         Bundle args = new Bundle();
         args.putSerializable("CAPTION",(Serializable)photoName);
+        args.putSerializable("PHOTOPATH", (Serializable)currPhoto.getPhotoPath().toString());
+        Intent intent = new Intent();
+        intent.putExtras(args);
+        setResult(RESULT_OK, intent);
         finish(); // pops activity from the call stack, returns to parent
     }
 }
