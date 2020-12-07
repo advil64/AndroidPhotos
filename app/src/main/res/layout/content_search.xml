@@ -8,6 +8,8 @@
 
     <ListView
         android:id="@+id/searchPhotoList"
+        android:choiceMode="singleChoice"
+        android:listSelector="@android:color/darker_gray"
         android:layout_width="337dp"
         android:layout_height="223dp"
         android:layout_marginTop="12dp"

@@ -30,13 +30,14 @@ import java.util.ArrayList;
 public class OpenAlbum extends AppCompatActivity {
 
     private ListView listview;
-    private Album currAlbum;
     private Button removePhotoButton;
     private Button displayPhotoButton;
     private int selectedIndex = -1;
 
     ArrayList<Photo> photos= new ArrayList<>();
     ArrayList<Album> albums= new ArrayList<>();
+    int albumIndex = 0;
+    int photoIndex = 0;
 
     public static final int TAGS_CODE = 1;
     @Override
@@ -54,8 +55,9 @@ public class OpenAlbum extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle args = intent.getBundleExtra("BUNDLE");
         albums = (ArrayList<Album>)args.getSerializable("ALL ALBUMS");
-        currAlbum = (Album)args.getSerializable("ALBUM");
-        photos = currAlbum.getPhotos();
+        //currAlbum = (Album)args.getSerializable("ALBUM");
+        albumIndex = (int)args.getSerializable("ALBUM INDEX");
+        photos = albums.get(albumIndex).getPhotos();
 
         //setting up list of photos
         listview = (ListView) findViewById(R.id.PhotoList);
@@ -87,12 +89,15 @@ public class OpenAlbum extends AppCompatActivity {
                 displayPhotoActivity();
             }
         });
+
     }
 
     public void pickPhotoActivity(){
-        Intent pickPhoto = new Intent(Intent.ACTION_PICK,
-                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(pickPhoto , 1);
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+        startActivityForResult(Intent.createChooser(intent,
+                "Select image"), 1);
     }
 
     public void displayPhotoActivity(){
@@ -119,20 +124,52 @@ public class OpenAlbum extends AppCompatActivity {
         Intent intent = new Intent(this, DisplayPhoto.class);
         Bundle args = new Bundle();
         args.putSerializable("ALL ALBUMS", (Serializable)albums);
-        args.putSerializable("PHOTO",(Serializable)listview.getItemAtPosition(selectedIndex));
+        args.putSerializable("ALBUM INDEX", (Serializable)albumIndex);
+        //args.putSerializable("PHOTO INDEX",(Serializable)listview.getItemAtPosition(selectedIndex));
+        Photo p = (Photo) listview.getItemAtPosition(selectedIndex);
+        for(int i=0; i<albums.size(); i++){
+            for(int j=0; j<albums.get(i).getPhotos().size(); j++){
+                if(p == (albums.get(i).getPhotos().get(j))){
+                    photoIndex = j;
+                    break;
+                }
+            }
+        }
+        args.putSerializable("PHOTO INDEX", (Serializable)photoIndex);
         intent.putExtra("BUNDLE",args);
-        startActivity(intent);
+        startActivityForResult(intent, 3);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
         Photo newPhoto = null;
+        if(requestCode == 3){
+            //read all the albums (when returning from display)
+            for(Album x: albums){
+                try {
+                    x.getPhotos().clear();
+                    try {
+                        readPhotos(x);
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return;
+        }
         switch(requestCode) {
-
             //first two cases are for the camera image returned
             case 0:
             case 1:
                 if(resultCode == RESULT_OK) {
+                    final int takeFlags = imageReturnedIntent.getFlags()
+                            & (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    try {
+                        getContentResolver().takePersistableUriPermission(imageReturnedIntent.getData(), takeFlags);
+                    } catch (Exception e) { }
                     Uri selectedImage = imageReturnedIntent.getData();
                     newPhoto = new Photo("", new ArrayList<>(), selectedImage.toString());
                     Intent intent = new Intent(this, AddPhoto.class);
@@ -152,8 +189,15 @@ public class OpenAlbum extends AppCompatActivity {
                         String name = bundle.getString("CAPTION");
                         String photoPath = bundle.getString("PHOTOPATH");
                         newPhoto = new Photo(name, new ArrayList<>(), photoPath);
-                        currAlbum.addPhoto(newPhoto);
+                        //currAlbum.addPhoto(newPhoto);
+                        albums.get(albumIndex).addPhoto(newPhoto);
                         update();
+                        try {
+                            //writePhotos(currAlbum);
+                            writePhotos(albums.get(albumIndex));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
                 break;
@@ -163,6 +207,18 @@ public class OpenAlbum extends AppCompatActivity {
     //method to update the list view
     public void update(){
         listview.setAdapter(new PhotosAdapter(this, R.id.PhotoList, photos));
+    }
+
+    //method to send back to Main Activity
+    @Override
+    public void onBackPressed(){
+        Bundle bundle = new Bundle();
+        bundle.putString("ALBUM_NAME",albums.get(albumIndex).getAlbumName());
+        Intent intent2 = new Intent();
+        intent2.putExtras(bundle);
+        setResult(RESULT_OK,intent2);
+        super.onBackPressed();
+        finish(); // pops activity from the call stack, returns to parent
     }
 
     //method to read photos from file
@@ -189,10 +245,10 @@ public class OpenAlbum extends AppCompatActivity {
             try {
                 String temp1 = (String) ois.readObject();
                 //find substrings of caption, tags, datetime, photoPath
-                int delimeter1 = temp1.indexOf("\\|");
+                int delimeter1 = temp1.indexOf("|");
                 //getting the captions
                 String caption = temp1.substring(0, delimeter1);
-                int delimeter2 = temp1.lastIndexOf("\\|");
+                int delimeter2 = temp1.lastIndexOf("|");
                 //getting the tags
                 String tagTemp = temp1.substring(delimeter1+2, delimeter2-1);
                 String[] arr = tagTemp.split(" ");
@@ -263,8 +319,9 @@ public class OpenAlbum extends AppCompatActivity {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+                return photos;
             }
-            return photos;
+
         }
     }
 

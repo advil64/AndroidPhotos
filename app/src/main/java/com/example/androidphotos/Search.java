@@ -11,6 +11,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -27,8 +28,10 @@ public class Search extends AppCompatActivity {
     private Spinner tagType2;
     private Spinner conjunction;
     private Button searchButton;
+    ArrayList<Photo> toDisplay;
 
     ArrayList<Album> list = new ArrayList<>();
+    int selectedIndex = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +44,20 @@ public class Search extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle args = intent.getBundleExtra("BUNDLE");
         list = (ArrayList<Album>) args.getSerializable("ARRAYLIST");
+        toDisplay = new ArrayList<>();
 
-        ArrayList<Photo> toDisplay = new ArrayList<>();
+        listview = (ListView) findViewById(R.id.searchPhotoList);
+        listview.setAdapter(new PhotosAdapter(this, R.id.searchPhotoList, toDisplay));
+        listview.setClickable(true);
+        listview.setItemsCanFocus(false);
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                selectedIndex = position;
+            }
+        });
 
-        listview = findViewById(R.id.searchPhotoList);
         tag1 = findViewById(R.id.tag1);
         tag2 = findViewById(R.id.tag2);
         tagType1 = findViewById(R.id.tagType1);
@@ -136,6 +149,7 @@ public class Search extends AppCompatActivity {
                                             toDisplay.add(p);
                                             count++;
                                             //ADD TO LIST
+                                            update();
                                         }
                                         present = false;
                                     }
@@ -201,6 +215,7 @@ public class Search extends AppCompatActivity {
                                     toDisplay.add(p);
                                     count++;
                                     //ADD TO LIST
+                                    update();
                                 }
                                 present = false;
                             }
@@ -219,6 +234,7 @@ public class Search extends AppCompatActivity {
                                     toDisplay.add(p);
                                     count++;
                                     //ADD TO LIST
+                                    update();
                                 }
                                 present = false;
                             }
@@ -265,6 +281,7 @@ public class Search extends AppCompatActivity {
                                     toDisplay.add(p);
                                     count++;
                                     //ADD TO LIST
+                                    update();
                                 }
                                 present = false;
                             }
@@ -283,6 +300,7 @@ public class Search extends AppCompatActivity {
                                     toDisplay.add(p);
                                     count++;
                                     //ADD TO LIST
+                                    update();
                                 }
                                 present = false;
                             }
@@ -329,6 +347,7 @@ public class Search extends AppCompatActivity {
                                     toDisplay.add(p);
                                     count++;
                                     //ADD TO LIST
+                                    update();
                                 }
                                 present = false;
                             }
@@ -345,6 +364,7 @@ public class Search extends AppCompatActivity {
                                     toDisplay.add(p);
                                     count++;
                                     //ADD TO LIST
+                                    update();
                                 }
                                 present = false;
                             }
@@ -363,6 +383,7 @@ public class Search extends AppCompatActivity {
                                     toDisplay.add(p);
                                     count++;
                                     //ADD TO LIST
+                                    update();
                                 }
                                 present = false;
                             }
@@ -379,6 +400,7 @@ public class Search extends AppCompatActivity {
                                     toDisplay.add(p);
                                     count++;
                                     //ADD TO LIST
+                                    update();
                                 }
                                 present = false;
                             }
@@ -405,6 +427,8 @@ public class Search extends AppCompatActivity {
             newFragment.show(getSupportFragmentManager(),"badfields");
             return;
         }
-//        System.out.println(toDisplay);
+    }
+    public void update(){
+        listview.setAdapter(new PhotosAdapter(this,R.id.searchPhotoList, toDisplay));
     }
 }
