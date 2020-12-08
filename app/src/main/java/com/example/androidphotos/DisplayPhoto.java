@@ -2,14 +2,6 @@ package com.example.androidphotos;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.DialogFragment;
-
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -19,12 +11,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,12 +24,7 @@ import java.util.ArrayList;
 public class DisplayPhoto extends AppCompatActivity {
 
     private ArrayList<Album> albums;
-    private Button addTagButton;
-    private Button removeTagButton;
-    private Spinner tagType;
-    private EditText tagText;
     private ListView tagsList;
-    private Button slideshowButton;
 
     int albumIndex = 0;
     int photoIndex = 0;
@@ -63,9 +50,9 @@ public class DisplayPhoto extends AppCompatActivity {
         ImageView myImageView = findViewById(R.id.image);
         myImageView.setImageURI(albums.get(albumIndex).getPhotos().get(photoIndex).getPhotoPath());
 
-        addTagButton = findViewById(R.id.addTag);
-        removeTagButton = findViewById(R.id.removeTag);
-        slideshowButton = findViewById(R.id.slideshow);
+        Button addTagButton = findViewById(R.id.addTag);
+        Button removeTagButton = findViewById(R.id.removeTag);
+        Button slideshowButton = findViewById(R.id.slideshow);
 
         tagsList = findViewById(R.id.tagsList);
         tagsList.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, albums.get(albumIndex).getPhotos().get(photoIndex).getTags()));
@@ -108,30 +95,22 @@ public class DisplayPhoto extends AppCompatActivity {
     }
     
     private void addTag(Photo currPhoto){
-        tagType = findViewById(R.id.tagType);
-        tagText = findViewById(R.id.tagText);
+        Spinner tagType = findViewById(R.id.tagType);
+        EditText tagText = findViewById(R.id.tagText);
         String type = tagType.getSelectedItem().toString();
         String tag = tagText.getText().toString().trim();
         String totalTag = type + ": " + tag;
         //check to see if both type and tag text are filled
         if(type.equals("None") || type.equals("") || type == null || tag.equals("") || tag == null){
             //show pop-up error (both fields are required)
-            Bundle bundle = new Bundle();
-            bundle.putString(PopupDialog.MESSAGE_KEY, "Tag type and tag fields are both required");
-            DialogFragment newFragment = new PopupDialog();
-            newFragment.setArguments(bundle);
-            newFragment.show(getSupportFragmentManager(),"badfields");
+            showError("Tag type and tag fields are both required");
             return;
         }
         for(String s: currPhoto.getTags()){
             //check to see if tag already exists
             if(s.equalsIgnoreCase(totalTag)){
                 //show pop-up error (tag already exists)
-                Bundle bundle = new Bundle();
-                bundle.putString(PopupDialog.MESSAGE_KEY, "Tag already exists");
-                DialogFragment newFragment = new PopupDialog();
-                newFragment.setArguments(bundle);
-                newFragment.show(getSupportFragmentManager(),"badfields");
+                showError("Tag already exists");
                 return;
             }
         }
@@ -155,44 +134,46 @@ public class DisplayPhoto extends AppCompatActivity {
     private void removeTag(Photo currPhoto){
         //if nothing is selected in from the tags List
         if(selectedIndex == -1){
-            Bundle bundle = new Bundle();
-            bundle.putString(PopupDialog.MESSAGE_KEY, "Please select a tag");
-            DialogFragment newFragment = new PopupDialog();
-            newFragment.setArguments(bundle);
-            newFragment.show(getSupportFragmentManager(),"badfields");
+            showError("Please select a tag");
             return;
         }
         //if list is empty
         if(currPhoto.getTags().size() == 0){
-            Bundle bundle = new Bundle();
-            bundle.putString(PopupDialog.MESSAGE_KEY, "List is empty");
-            DialogFragment newFragment = new PopupDialog();
-            newFragment.setArguments(bundle);
-            newFragment.show(getSupportFragmentManager(),"badfields");
+            showError("List is empty");
             return;
         }
         //removing from tags list from all references
         String remove = tagsList.getItemAtPosition(selectedIndex).toString();
         //check to see if photo exists in other albums
-        for(int i=0; i<albums.size(); i++){
-            for(int j=0; j<albums.get(i).getPhotos().size(); j++){
-                if(albums.get(i).getPhotos().get(j).getPhotoPath().equals(currPhoto.getPhotoPath())){
-                    albums.get(i).getPhotos().get(j).addTag(remove);
+        for(Album a: albums){
+            for(Photo p: a.getPhotos()){
+                if(p.getPhotoPath().equals(currPhoto.getPhotoPath()) && p.getCaption().equals(currPhoto.getCaption())){
+                    p.removeTag(remove);
                 }
             }
             try {
-                writePhotos(albums.get(i));
+                writePhotos(a);
             } catch (IOException e) {
-                e.printStackTrace();
+                showError("An error occurred while trying to save data, please try again");
             }
         }
-        //update the listview
+        //update the list view
         update();
     }
-    //method to update the listview
+
+    //method to update the list view
     public void update(){
         tagsList.setAdapter(
                 new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1 , albums.get(albumIndex).getPhotos().get(photoIndex).getTags()));
+    }
+
+    //method to raise the error dialog
+    public void showError(String err){
+        Bundle bundle = new Bundle();
+        bundle.putString(PopupDialog.MESSAGE_KEY, err);
+        DialogFragment newFragment = new PopupDialog();
+        newFragment.setArguments(bundle);
+        newFragment.show(getSupportFragmentManager(), "badfields");
     }
 
     //method to send to slideshow page

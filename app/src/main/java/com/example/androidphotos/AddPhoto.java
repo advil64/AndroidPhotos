@@ -21,6 +21,7 @@ import java.util.ArrayList;
 public class AddPhoto extends AppCompatActivity {
 
     private Photo currPhoto;
+    private Album currAlbum;
     private ArrayList<Album> albums;
 
     @Override
@@ -35,6 +36,8 @@ public class AddPhoto extends AppCompatActivity {
         Bundle args = intent.getBundleExtra("BUNDLE");
         currPhoto = (Photo)args.getSerializable("PHOTO");
         albums = (ArrayList<Album>)args.getSerializable("ALL ALBUMS");
+        int albumIndex = (int)args.getSerializable("ALBUM INDEX");
+        currAlbum = albums.get(albumIndex);
 
         //setting image view
         ImageView myImageView = findViewById(R.id.mainImage);
@@ -87,20 +90,23 @@ public class AddPhoto extends AppCompatActivity {
         for(Album a: albums){
             for(Photo p: a.getPhotos()){
                 if(p.photoPath.equals(currPhoto.photoPath) && p.getCaption().equals(currPhoto.getCaption())){
-                    Bundle bundle = new Bundle();
-                    bundle.putString(PopupDialog.MESSAGE_KEY, "Duplicate photos not allowed, change photo name");
-                    DialogFragment newFragment = new PopupDialog();
-                    newFragment.setArguments(bundle);
-                    newFragment.show(getSupportFragmentManager(),"badfields");
-                    return;
+                    if(a.albumName.equals(currAlbum.albumName)){
+                        Bundle bundle = new Bundle();
+                        bundle.putString(PopupDialog.MESSAGE_KEY, "Duplicate photos not allowed, change photo name");
+                        DialogFragment newFragment = new PopupDialog();
+                        newFragment.setArguments(bundle);
+                        newFragment.show(getSupportFragmentManager(),"badfields");
+                        return;
+                    } else{
+                        currPhoto = p;
+                    }
                 }
             }
         }
 
         //if album name doesn't exist send album name in bundle to caller
         Bundle args = new Bundle();
-        args.putSerializable("CAPTION",(Serializable)photoName);
-        args.putSerializable("PHOTOPATH", (Serializable)currPhoto.getPhotoPath().toString());
+        args.putSerializable("NEW PHOTO",(Serializable)currPhoto);
         Intent intent = new Intent();
         intent.putExtras(args);
         setResult(RESULT_OK, intent);

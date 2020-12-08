@@ -31,7 +31,6 @@ import java.util.ArrayList;
 public class OpenAlbum extends AppCompatActivity {
 
     private ListView listview;
-    private Button removePhotoButton;
     private int selectedIndex = -1;
     private Album currAlbum;
 
@@ -91,6 +90,15 @@ public class OpenAlbum extends AppCompatActivity {
             }
         });
 
+        //setting up on click listener for remove button
+        Button removePhotoButton = findViewById(R.id.removePhotoButton);
+        removePhotoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removePhotoActivity();
+            }
+        });
+
         //make a albums array list of just their names
         ArrayList<String> albumNames = new ArrayList<>();
         albums.forEach(a -> albumNames.add(a.albumName));
@@ -119,6 +127,33 @@ public class OpenAlbum extends AppCompatActivity {
         });
     }
 
+    public void removePhotoActivity(){
+
+        //list is empty
+        if (photos.size() == 0) {
+            //show pop-up error
+            showError("List is empty, there is nothing to moving");
+            return;
+        } else if (selectedIndex == -1) {
+            //nothing was selected
+            showError("Please select an item before moving");
+            return;
+        }
+
+        //retrieve photo and remove accordingly from the selected album
+        Photo p = (Photo) listview.getItemAtPosition(selectedIndex);
+        currAlbum.removePhoto(p);
+        try {
+            ReadWrite.writeAlbumsToFile(albums);
+            ReadWrite.writePhotos(currAlbum);
+        } catch (Exception e){
+            //Same album or the default album was selected
+            showError("An error occurred while trying to move the photo, please try again");
+            return;
+        }
+        update();
+    }
+
     public void movePhotoActivity(String albumName) {
 
         //list is empty
@@ -145,8 +180,12 @@ public class OpenAlbum extends AppCompatActivity {
             }
         }
         if(toMove != null){
-            currAlbum.removePhoto(p);
-            toMove.addPhoto(p);
+            if(toMove.getPhotos().contains(p)){
+                showError("The selected picture already exists in the album");
+            } else{
+                currAlbum.removePhoto(p);
+                toMove.addPhoto(p);
+            }
         }
         try {
             ReadWrite.writeAlbumsToFile(albums);
@@ -168,22 +207,22 @@ public class OpenAlbum extends AppCompatActivity {
     }
 
     public void displayPhotoActivity(){
+
         //list is empty
         if(photos.size() == 0){
             //show pop-up error
             showError("List is empty, there is nothing to display");
-        }
-        //nothing was selected
-        if(selectedIndex == -1){
-            //show pop-up error
+        } else if(selectedIndex == -1){
+            //nothing was selected
             showError("Please select an item before displaying");
             return;
         }
+
+        //otherwise display the selected photo
         Intent intent = new Intent(this, DisplayPhoto.class);
         Bundle args = new Bundle();
         args.putSerializable("ALL ALBUMS", (Serializable)albums);
         args.putSerializable("ALBUM INDEX", (Serializable)albumIndex);
-        //args.putSerializable("PHOTO INDEX",(Serializable)listview.getItemAtPosition(selectedIndex));
         Photo p = (Photo) listview.getItemAtPosition(selectedIndex);
         for(int i=0; i<albums.size(); i++){
             for(int j=0; j<albums.get(i).getPhotos().size(); j++){
@@ -202,6 +241,7 @@ public class OpenAlbum extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
         Photo newPhoto = null;
         switch(requestCode) {
+
             //first two cases are for the camera image returned
             case 0:
             case 1:
@@ -218,6 +258,7 @@ public class OpenAlbum extends AppCompatActivity {
                     Bundle args = new Bundle();
                     args.putSerializable("PHOTO", (Serializable)newPhoto);
                     args.putSerializable("ALL ALBUMS", (Serializable)albums);
+                    args.putSerializable("ALBUM INDEX", albumIndex);
                     intent.putExtra("BUNDLE", args);
                     startActivityForResult(intent, 2);
                 }
@@ -229,9 +270,7 @@ public class OpenAlbum extends AppCompatActivity {
                     Bundle bundle = imageReturnedIntent.getExtras();
                     //get the most recently added image
                     if(bundle != null){
-                        String name = bundle.getString("CAPTION");
-                        String photoPath = bundle.getString("PHOTOPATH");
-                        newPhoto = new Photo(name, new ArrayList<>(), photoPath);
+                        newPhoto = (Photo)bundle.getSerializable("NEW PHOTO");
                         currAlbum.addPhoto(newPhoto);
                         update();
                         try {
@@ -243,15 +282,16 @@ public class OpenAlbum extends AppCompatActivity {
                 }
                 break;
 
+            //returning from display activity
             case 3:
-                //read all the albums (when returning from display)
+                //read all the albums
                 for(Album x: albums){
                     try {
                         x.getPhotos().clear();
                         try {
                             ReadWrite.readPhotos(x);
                         } catch (ClassNotFoundException e) {
-                            e.printStackTrace();
+                            showError("An error occurred while trying to overwrite data, please try again");
                         }
                     } catch (IOException e) {
                         //Same album or the default album was selected
