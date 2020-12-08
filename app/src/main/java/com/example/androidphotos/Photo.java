@@ -11,7 +11,7 @@ import java.util.Collections;
  * @author Advith Chegu
  * @author Banty Patel
  */
-public class Photo implements Comparable<Photo>, Serializable {
+public class Photo implements Serializable {
     private String caption;
     private ArrayList<String> tags;
     public String photoPath;
@@ -48,12 +48,7 @@ public class Photo implements Comparable<Photo>, Serializable {
      * @param tag - tag to be removed
      */
     public void removeTag(String tag) {
-        for(String s: tags) {
-            if(s.equals(tag)) {
-                tags.remove(s);
-                break;
-            }
-        }
+        tags.remove(tag);
     }
 
     /**
@@ -107,36 +102,6 @@ public class Photo implements Comparable<Photo>, Serializable {
     }
 
     /**
-     * method two photos
-     * @return - int used for comparison
-     */
-    @Override
-    public int compareTo(Photo toCompare) {
-
-//        //sort tag arrays before comparing
-//        ArrayList<String> myTags = new ArrayList<>(this.tags);
-//        ArrayList<String> compareTags = new ArrayList<>(toCompare.getTags());
-//        Collections.sort(myTags);
-//        Collections.sort(compareTags);
-//
-//        //first compare the date time
-//        if (!this.photoPath.equals(toCompare.getPhotoPath())){
-//            return this.photoPath.compareTo(toCompare.getPhotoPath());
-//        } else if(!this.caption.equals(toCompare.getCaption())){
-//            return this.caption.compareTo(toCompare.getCaption());
-//        } else if(this.tags.size() != toCompare.getTags().size()){
-//            return toCompare.getTags().size() - this.getTags().size();
-//        } else{
-//            for (int i = 0; i < this.tags.size(); i++){
-//                if(!myTags.get(i).equals(compareTags.get(i))){
-//                    return myTags.get(i).compareTo(compareTags.get(i));
-//                }
-//            }
-//        }
-        return 0;
-    }
-
-    /**
      * method to check equality of two photos
      * @return - bool used for comparison
      */
@@ -150,27 +115,6 @@ public class Photo implements Comparable<Photo>, Serializable {
             return false;
         }
         Photo toCompare = (Photo)o;
-
-        //sort tag arrays before comparing
-        ArrayList<String> myTags = new ArrayList<>(this.tags);
-        ArrayList<String> compareTags = new ArrayList<>(toCompare.getTags());
-        Collections.sort(myTags);
-        Collections.sort(compareTags);
-
-        //first compare the date time
-        if (!this.photoPath.equals(toCompare.getPhotoPath())){
-            return false;
-        } else if(!this.caption.equals(toCompare.getCaption())){
-            return false;
-        } else if(this.tags.size() != toCompare.getTags().size()){
-            return false;
-        } else{
-            for (int i = 0; i < this.tags.size(); i++){
-                if(!myTags.get(i).equals(compareTags.get(i))){
-                    return false;
-                }
-            }
-        }
-        return true;
+        return toCompare.toString().equals(this.toString());
     }
 }

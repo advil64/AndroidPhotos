@@ -33,7 +33,7 @@ public class Album implements Serializable {
      * @param oldPhoto - photo to be removed
      */
     public void removePhoto(Photo oldPhoto){
-        this.albumPhotos.remove(oldPhoto);
+        boolean s = this.albumPhotos.remove(oldPhoto);
     }
 
     /**

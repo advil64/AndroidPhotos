@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 import java.io.EOFException;
 import java.io.File;
@@ -31,13 +32,14 @@ public class OpenAlbum extends AppCompatActivity {
 
     private ListView listview;
     private Button removePhotoButton;
-    private Button displayPhotoButton;
     private int selectedIndex = -1;
+    private Album currAlbum;
 
     ArrayList<Photo> photos= new ArrayList<>();
     ArrayList<Album> albums= new ArrayList<>();
     int albumIndex = 0;
     int photoIndex = 0;
+    boolean isInitialized = false;
 
     public static final int TAGS_CODE = 1;
     @Override
@@ -55,9 +57,9 @@ public class OpenAlbum extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle args = intent.getBundleExtra("BUNDLE");
         albums = (ArrayList<Album>)args.getSerializable("ALL ALBUMS");
-        //currAlbum = (Album)args.getSerializable("ALBUM");
         albumIndex = (int)args.getSerializable("ALBUM INDEX");
         photos = albums.get(albumIndex).getPhotos();
+        currAlbum = albums.get(albumIndex);
 
         //setting up list of photos
         listview = (ListView) findViewById(R.id.PhotoList);
@@ -81,7 +83,7 @@ public class OpenAlbum extends AppCompatActivity {
         });
 
         //setting on action listener for display button
-        displayPhotoButton = findViewById(R.id.displayPhotoButton);
+        Button displayPhotoButton = findViewById(R.id.displayPhotoButton);
         displayPhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,6 +91,73 @@ public class OpenAlbum extends AppCompatActivity {
             }
         });
 
+        //make a albums array list of just their names
+        ArrayList<String> albumNames = new ArrayList<>();
+        albums.forEach(a -> albumNames.add(a.albumName));
+        albumNames.add(0, "Move Photo");
+
+        //populating spinner options
+        Spinner movePhotoButton = findViewById(R.id.movePhotoButton);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, albumNames);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        movePhotoButton.setAdapter(arrayAdapter);
+
+        //setting on action listener for display button
+        movePhotoButton.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                if(isInitialized) {
+                    movePhotoActivity(albumNames.get(position));
+                } else{
+                    isInitialized = true;
+                }
+            }
+
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                showError("Album Not Selected");
+            }
+        });
+    }
+
+    public void movePhotoActivity(String albumName) {
+
+        //list is empty
+        if (photos.size() == 0) {
+            //show pop-up error
+            showError("List is empty, there is nothing to moving");
+            return;
+        } else if (selectedIndex == -1) {
+            //nothing was selected
+            showError("Please select an item before moving");
+            return;
+        } else if(albumName.equals("Move Photo") || albumName.equals(currAlbum.albumName)){
+            //Same album or the default album was selected
+            showError("Please select a different album to move to");
+            return;
+        }
+
+        //retrieve photo and move accordingly to the selected album
+        Photo p = (Photo) listview.getItemAtPosition(selectedIndex);
+        Album toMove = null;
+        for(Album a: albums){
+            if(a.albumName.equals(albumName)){
+                toMove = a;
+            }
+        }
+        if(toMove != null){
+            currAlbum.removePhoto(p);
+            toMove.addPhoto(p);
+        }
+        try {
+            ReadWrite.writeAlbumsToFile(albums);
+            ReadWrite.writePhotos(currAlbum);
+            ReadWrite.writePhotos(toMove);
+        } catch (Exception e){
+            //Same album or the default album was selected
+            showError("An error occurred while trying to move the photo, please try again");
+            return;
+        }
+        update();
     }
 
     public void pickPhotoActivity(){
@@ -102,21 +171,12 @@ public class OpenAlbum extends AppCompatActivity {
         //list is empty
         if(photos.size() == 0){
             //show pop-up error
-            Bundle bundle = new Bundle();
-            bundle.putString(PopupDialog.MESSAGE_KEY, "List is empty, there is nothing to display");
-            DialogFragment newFragment = new PopupDialog();
-            newFragment.setArguments(bundle);
-            newFragment.show(getSupportFragmentManager(),"badfields");
-            return;
+            showError("List is empty, there is nothing to display");
         }
         //nothing was selected
         if(selectedIndex == -1){
             //show pop-up error
-            Bundle bundle = new Bundle();
-            bundle.putString(PopupDialog.MESSAGE_KEY, "Please select an item before displaying");
-            DialogFragment newFragment = new PopupDialog();
-            newFragment.setArguments(bundle);
-            newFragment.show(getSupportFragmentManager(),"badfields");
+            showError("Please select an item before displaying");
             return;
         }
         Intent intent = new Intent(this, DisplayPhoto.class);
@@ -172,12 +232,10 @@ public class OpenAlbum extends AppCompatActivity {
                         String name = bundle.getString("CAPTION");
                         String photoPath = bundle.getString("PHOTOPATH");
                         newPhoto = new Photo(name, new ArrayList<>(), photoPath);
-                        //currAlbum.addPhoto(newPhoto);
-                        albums.get(albumIndex).addPhoto(newPhoto);
+                        currAlbum.addPhoto(newPhoto);
                         update();
                         try {
-                            //writePhotos(currAlbum);
-                            ReadWrite.writePhotos(albums.get(albumIndex));
+                            ReadWrite.writePhotos(currAlbum);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -196,11 +254,22 @@ public class OpenAlbum extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        //Same album or the default album was selected
+                        showError("An error occurred while trying to overwrite data, please try again");
+                        return;
                     }
                 }
                 break;
         }
+    }
+
+    //method to raise the error dialog
+    public void showError(String err){
+        Bundle bundle = new Bundle();
+        bundle.putString(PopupDialog.MESSAGE_KEY, err);
+        DialogFragment newFragment = new PopupDialog();
+        newFragment.setArguments(bundle);
+        newFragment.show(getSupportFragmentManager(), "badfields");
     }
 
     //method to update the list view
