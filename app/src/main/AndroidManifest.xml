@@ -3,20 +3,24 @@
     package="com.example.androidphotos">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
-        android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidPhotos">
         <activity
+            android:name=".SlideShow"
+            android:label="@string/title_activity_slide_show"
+            android:theme="@style/Theme.AndroidPhotos.NoActionBar"></activity>
+        <activity
             android:name=".DisplayPhoto"
             android:label="@string/title_activity_display_photo"
-            android:theme="@style/Theme.AndroidPhotos.NoActionBar"></activity>
+            android:theme="@style/Theme.AndroidPhotos.NoActionBar" />
         <activity
             android:name=".AddPhoto"
             android:label="@string/title_activity_add_photo"

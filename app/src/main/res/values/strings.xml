@@ -97,4 +97,5 @@
     </string-array>
     <string name="title_activity_dis">dis</string>
     <string name="title_activity_display_photo">DisplayPhoto</string>
+    <string name="title_activity_slide_show">SlideShow</string>
 </resources>

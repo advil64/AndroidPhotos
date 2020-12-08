@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class DisplayPhoto extends AppCompatActivity {
@@ -36,6 +37,7 @@ public class DisplayPhoto extends AppCompatActivity {
     private Spinner tagType;
     private EditText tagText;
     private ListView tagsList;
+    private Button slideshowButton;
 
     int albumIndex = 0;
     int photoIndex = 0;
@@ -63,6 +65,7 @@ public class DisplayPhoto extends AppCompatActivity {
 
         addTagButton = findViewById(R.id.addTag);
         removeTagButton = findViewById(R.id.removeTag);
+        slideshowButton = findViewById(R.id.slideshow);
 
         tagsList = findViewById(R.id.tagsList);
         tagsList.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, albums.get(albumIndex).getPhotos().get(photoIndex).getTags()));
@@ -91,6 +94,15 @@ public class DisplayPhoto extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 removeTag(albums.get(albumIndex).getPhotos().get(photoIndex));
+            }
+        });
+
+        //setting on action listener for slideshow button
+        slideshowButton = findViewById(R.id.slideshow);
+        slideshowButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                slideshow(albums.get(albumIndex).getPhotos());
             }
         });
     }
@@ -181,6 +193,15 @@ public class DisplayPhoto extends AppCompatActivity {
     public void update(){
         tagsList.setAdapter(
                 new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1 , albums.get(albumIndex).getPhotos().get(photoIndex).getTags()));
+    }
+
+    //method to send to slideshow page
+    private void slideshow(ArrayList<Photo> list){
+        Intent intent = new Intent(this, SlideShow.class);
+        Bundle args = new Bundle();
+        args.putSerializable("PHOTO LIST", (Serializable)list);
+        intent.putExtra("BUNDLE",args);
+        startActivity(intent);
     }
 
     //method to write photos to file
