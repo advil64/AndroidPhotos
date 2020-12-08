@@ -66,11 +66,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //read all album names
-        readAlbums();
+        albums = ReadWrite.readAlbums();
         //read all photos for each album
         for(Album x: albums){
             try {
-                readPhotos(x);
+                ReadWrite.mainReadPhotos(x);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
                         for(Album x: albums){
                             if(x.toString().trim().equals(album)){
                                 albums.remove(x);
-                                writeAlbumsToFile(albums);
+                                ReadWrite.writeAlbumsToFile(albums);
                                 update();
                                 //delete the directory
                                 String albumName = x.getAlbumName();
@@ -311,7 +311,7 @@ public class MainActivity extends AppCompatActivity {
             for(Album x: albums){
                 try {
                     x.getPhotos().clear();
-                    readPhotos(x);
+                    ReadWrite.mainReadPhotos(x);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -336,7 +336,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // redo the adapter to reflect change
-        writeAlbumsToFile(albums);
+        ReadWrite.writeAlbumsToFile(albums);
         update();
     }
 
@@ -344,138 +344,5 @@ public class MainActivity extends AppCompatActivity {
     public void update(){
         listview.setAdapter(
                 new ArrayAdapter<Album>(this,android.R.layout.simple_list_item_1 , albums));
-    }
-    //method to write back to file
-    private void writeAlbumsToFile(ArrayList<Album> data) {
-        try {
-            FileOutputStream fos = new FileOutputStream("data/data/com.example.androidphotos/data/albums.dat");
-            OutputStreamWriter output = new OutputStreamWriter(fos);
-            String text = "";
-            for(Album x: data){
-                text += x.toFile();
-            }
-            output.write(text);
-            output.close();
-        }
-        catch (IOException e) {
-            Log.e("Exception", "Write to file failed");
-        }
-    }
-
-    //method to read albums from albums.dat
-    private void readAlbums(){
-        try {
-            FileInputStream fis = new FileInputStream("data/data/com.example.androidphotos/data/albums.dat");
-            BufferedReader br = new BufferedReader(
-                    new InputStreamReader(fis));
-            String albumInfo = null;
-            albumInfo = br.readLine();
-            if(albumInfo!= null) {
-                String[] tokens = albumInfo.split("\\|");
-                for (String s : tokens) {
-                    albums.add(new Album(s, new ArrayList<Photo>()));
-                }
-            }
-        } catch (IOException e) {}
-    }
-    private void readPhotos(Album currAlbum) throws IOException {
-        //create the file if it doesn't exist
-        File temp = new File("data/data/com.example.androidphotos/data/" + currAlbum.getAlbumName() + "/photo.dat");
-        try {
-            temp.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        ArrayList<String> combo = new ArrayList<>();
-        combo.add("Location");
-        combo.add("Person");
-        ObjectInputStream ois;
-        try{
-            ois = new ObjectInputStream(new FileInputStream("data/data/com.example.androidphotos/data/" + currAlbum.getAlbumName() + "/photo.dat"));
-        } catch(EOFException e) {
-            return;
-        }
-        //read the .dat file and populate the observable list (list of albums)
-        while(true) {
-            try {
-                String temp1 = (String) ois.readObject();
-                //find substrings of caption, tags, datetime, photoPath
-                int delimeter1 = temp1.indexOf("|");
-                //getting the captions
-                String caption = temp1.substring(0, delimeter1);
-                int delimeter2 = temp1.lastIndexOf("|");
-                //getting the tags
-                String tagTemp = temp1.substring(delimeter1+2, delimeter2-1);
-                String[] arr = tagTemp.split(" ");
-                ArrayList<String> tags = new ArrayList<>();
-                String tag = "";
-                int i = 1;
-                boolean boo = false;
-                for(String s: arr) {
-                    //to avoid the null pointer exception in next if statement
-                    if(s.equals("")) {
-                        continue;
-                    }
-                    //if it's in combo append s to tag
-                    for(String c: combo) {
-                        if(c.equalsIgnoreCase(s.substring(0, s.length()-1))) {
-                            boo = true;
-                        }
-                    }
-                    if(boo == true) {
-                        boo = false;
-                        //check to see if tag is empty (new starting)
-                        if(tag.equals("")) {
-                            tag = tag + s + " ";
-                        }
-                        //not empty add tag to list and start tag over
-                        else {
-                            //check for commas at the end
-                            if(tag.charAt(tag.length()-1) == ',') {
-                                tags.add(tag.substring(0,tag.length()-1).trim());
-                                tag = "";
-                                tag = tag + s + " ";
-                            }
-                            else {
-                                tags.add(tag.trim());
-                                tag = "";
-                                tag = tag + s + " ";
-                            }
-                        }
-                    }
-                    //not a tag type
-                    else {
-                        //if we reach the end
-                        if(i == arr.length) {
-                            tag = tag + s + " ";
-                            tags.add(tag.trim());
-                        }
-                        //append s to tag because type is already there and continue
-                        else {
-                            if(s.charAt(s.length()-1) == ',') {
-                                tag = tag + s.substring(0, s.length()-1);
-                            }
-                            else {
-                                tag = tag + s + " ";
-                            }
-                        }
-                    }
-                    //increment i to keep count of number of words to know when we are ending
-                    i++;
-                }
-                //getting the location
-                String location = temp1.substring(delimeter2+1);
-                Photo toAdd = new Photo(caption,tags,location);
-                if(!currAlbum.getPhotos().contains(toAdd)){
-                    currAlbum.addPhoto(toAdd);
-                }
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-                return;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
-            }
-        }
     }
 }

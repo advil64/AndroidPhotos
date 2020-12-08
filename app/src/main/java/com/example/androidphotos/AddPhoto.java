@@ -21,6 +21,7 @@ import java.util.ArrayList;
 public class AddPhoto extends AppCompatActivity {
 
     private Photo currPhoto;
+    private ArrayList<Album> albums;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,7 @@ public class AddPhoto extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle args = intent.getBundleExtra("BUNDLE");
         currPhoto = (Photo)args.getSerializable("PHOTO");
+        albums = (ArrayList<Album>)args.getSerializable("ALL ALBUMS");
 
         //setting image view
         ImageView myImageView = findViewById(R.id.mainImage);
@@ -69,6 +71,7 @@ public class AddPhoto extends AppCompatActivity {
     public void create(View view){
         EditText createText = findViewById(R.id.createText);
         String photoName = createText.getText().toString().trim();
+
         //if album name is empty
         if(photoName == null || photoName.trim().length() == 0){
             Bundle bundle = new Bundle();
@@ -78,14 +81,31 @@ public class AddPhoto extends AppCompatActivity {
             newFragment.show(getSupportFragmentManager(),"badfields");
             return;
         }
-        //if album name doesn't exist send album name in bundle to caller
         currPhoto.setCaption(photoName);
+
+        //check if the photo name already exists in another album
+        for(Album a: albums){
+            for(Photo p: a.getPhotos()){
+                if(p.photoPath.equals(currPhoto.photoPath) && p.getCaption().equals(currPhoto.getCaption())){
+                    Bundle bundle = new Bundle();
+                    bundle.putString(PopupDialog.MESSAGE_KEY, "Duplicate photos not allowed, change photo name");
+                    DialogFragment newFragment = new PopupDialog();
+                    newFragment.setArguments(bundle);
+                    newFragment.show(getSupportFragmentManager(),"badfields");
+                    return;
+                }
+            }
+        }
+
+        //if album name doesn't exist send album name in bundle to caller
         Bundle args = new Bundle();
         args.putSerializable("CAPTION",(Serializable)photoName);
         args.putSerializable("PHOTOPATH", (Serializable)currPhoto.getPhotoPath().toString());
         Intent intent = new Intent();
         intent.putExtras(args);
         setResult(RESULT_OK, intent);
-        finish(); // pops activity from the call stack, returns to parent
+
+        // pops activity from the call stack, returns to parent
+        finish();
     }
 }

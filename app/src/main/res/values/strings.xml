@@ -82,6 +82,11 @@
         <item>Person</item>
         <item>Location</item>
     </string-array>
+    <string-array name="myAlbums">
+        <item>Move</item>
+        <item>Album 1</item>
+        <item>Album 2</item>
+    </string-array>
     <!--
     This string is used for square devices and overridden by hello_world in
     values-round/strings.xml for round devices.

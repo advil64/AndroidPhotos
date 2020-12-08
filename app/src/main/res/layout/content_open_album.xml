@@ -45,8 +45,7 @@
         android:layout_height="52dp"
         android:layout_marginTop="60dp"
         android:text="@string/displayPhotoButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintEnd_toStartOf="@+id/movePhotoButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/PhotoList" />
 
@@ -62,5 +61,17 @@
         app:layout_constraintHorizontal_bias="0.13"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/PhotoList" />
+
+    <Spinner
+        android:id="@+id/movePhotoButton"
+        android:layout_width="156dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="36dp"
+        android:background="#FFFFFF"
+        android:entries="@array/myAlbums"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/PhotoList" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
