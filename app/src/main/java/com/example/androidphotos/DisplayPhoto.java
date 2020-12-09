@@ -147,7 +147,7 @@ public class DisplayPhoto extends AppCompatActivity {
         //check to see if photo exists in other albums
         for(Album a: albums){
             for(Photo p: a.getPhotos()){
-                if(p.getPhotoPath().equals(currPhoto.getPhotoPath()) && p.getCaption().equals(currPhoto.getCaption())){
+                if(p.equals(currPhoto)){
                     p.removeTag(remove);
                 }
             }
