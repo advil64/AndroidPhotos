@@ -254,6 +254,29 @@ public class OpenAlbum extends AppCompatActivity {
                     } catch (Exception e) { }
                     Uri selectedImage = imageReturnedIntent.getData();
                     newPhoto = new Photo("", new ArrayList<>(), selectedImage.toString());
+
+                    //check if the photo being added already exists in another album
+                    for(Album a: albums){
+                        for(Photo p: a.getPhotos()){
+                            if(p.equals(newPhoto)){
+                                if(a.albumName.equals(currAlbum.albumName)){
+                                    showError("Duplicate photos not allowed, pick a different photo");
+                                } else{
+                                    newPhoto = p;
+                                    currAlbum.addPhoto(newPhoto);
+                                    update();
+                                    try {
+                                        ReadWrite.writePhotos(currAlbum);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                return;
+                            }
+                        }
+                    }
+
+                    //if the photo does not exist already, ask for a caption
                     Intent intent = new Intent(this, AddPhoto.class);
                     Bundle args = new Bundle();
                     args.putSerializable("PHOTO", (Serializable)newPhoto);

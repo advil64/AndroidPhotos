@@ -86,24 +86,6 @@ public class AddPhoto extends AppCompatActivity {
         }
         currPhoto.setCaption(photoName);
 
-        //check if the photo name already exists in another album
-        for(Album a: albums){
-            for(Photo p: a.getPhotos()){
-                if(p.photoPath.equals(currPhoto.photoPath) && p.getCaption().equals(currPhoto.getCaption())){
-                    if(a.albumName.equals(currAlbum.albumName)){
-                        Bundle bundle = new Bundle();
-                        bundle.putString(PopupDialog.MESSAGE_KEY, "Duplicate photos not allowed, change photo name");
-                        DialogFragment newFragment = new PopupDialog();
-                        newFragment.setArguments(bundle);
-                        newFragment.show(getSupportFragmentManager(),"badfields");
-                        return;
-                    } else{
-                        currPhoto = p;
-                    }
-                }
-            }
-        }
-
         //if album name doesn't exist send album name in bundle to caller
         Bundle args = new Bundle();
         args.putSerializable("NEW PHOTO",(Serializable)currPhoto);

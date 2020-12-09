@@ -115,6 +115,6 @@ public class Photo implements Serializable {
             return false;
         }
         Photo toCompare = (Photo)o;
-        return toCompare.toString().equals(this.toString());
+        return toCompare.photoPath.equals(this.photoPath);
     }
 }
